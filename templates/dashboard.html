@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/vapor/bootstrap.min.css" rel="stylesheet">
+    <title>Dashboard</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Smart Inventory Manager</a>
+            
+            <div>
+                {% if current_user.is_authenticated %}
+                    <span class="navbar-text me-3">
+                        Welcome, {{ current_user.username }}
+                    </span>
+                    <a href="/logout" class="btn btn-outline-info btn-sm">Logout</a>
+                {% else %}
+                    <a href="/login" class="btn btn-outline-info btn-sm">Login</a>
+                    <a href="/register" class="btn btn-info btn-sm ms-2">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Inventory Dashboard</h1>
+            <a href="/add" class="btn btn-primary">Add New Product</a>
+        </div>
+
+        <form action="/" method="GET" class="mb-4 mt-3">
+            <div class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search by product name..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn btn-info">Search</button>
+            </div>
+        </form>
+
+        <div class="row mt-4">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card border-primary h-100">
+                    <div class="card-header">{{ product.name }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Quantity: {{ product.quantity }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Price: ₹{{ "%.2f"|format(product.price) }}</h6>
+                        <p class="card-text">{{ product.description }}</D>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        <a href="/edit/{{ product.id }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="/delete/{{ product.id }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col">
+                <div class="alert alert-dismissible alert-info">
+                  <strong>Heads up!</strong> No products in inventory yet. Click "Add New Product" to get started.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            setTimeout(() => {
+                document.querySelectorAll('.alert-dismissible').forEach((alert) => {
+                    new bootstrap.Alert(alert).close();
+                });
+            }, 5000); 
+        });
+    </script>
+</body>
+</html>
