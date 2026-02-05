@@ -8,127 +8,163 @@
     
     <style>
         body {
-            /* Professional Industrial/Telecom Background with Overlay */
-            background: linear-gradient(rgba(10, 10, 31, 0.8), rgba(10, 10, 31, 0.8)), 
+            /* Professional Industrial Background with refined overlay */
+            background: linear-gradient(rgba(15, 15, 35, 0.85), rgba(15, 15, 35, 0.85)), 
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Classic Top Navigation Bar */
+        .navbar {
+            background-color: rgba(30, 30, 45, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+        }
+
+        .login-wrapper {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
+            padding: 2rem 0;
         }
 
         .login-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
             padding: 15px;
         }
 
-        /* Glassmorphism Effect for the Login Card */
+        /* Enhanced Glassmorphism Card */
         .card {
-            background-color: rgba(30, 30, 45, 0.7) !important;
-            backdrop-filter: blur(15px);
+            background-color: rgba(30, 30, 45, 0.75) !important;
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-        }
-
-        .card-header {
-            background: transparent !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-            text-align: center;
-            padding: 20px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
         }
 
         .brand-logo {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .brand-logo span {
-            color: #32fbe2; /* Neon cyan to match Vapor theme */
+            color: #32fbe2;
+        }
+
+        /* Standardized Form Inputs */
+        .form-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .form-control {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
             color: #fff !important;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
         }
 
         .form-control:focus {
             border-color: #32fbe2 !important;
-            box-shadow: 0 0 0 0.25rem rgba(50, 251, 226, 0.25) !important;
+            box-shadow: 0 0 0 0.2rem rgba(50, 251, 226, 0.15) !important;
         }
 
         .btn-primary {
-            background-image: linear-gradient(45deg, #32fbe2, #444cf7) !important;
+            background: linear-gradient(45deg, #32fbe2, #444cf7) !important;
             border: none !important;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: 0.3s;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(50, 251, 226, 0.4);
+            box-shadow: 0 8px 20px rgba(50, 251, 226, 0.3);
         }
 
         .footer-text {
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="text-center mb-4">
-            <h1 class="brand-logo mb-0"><span>SIM</span> | SMART INVENTORY</h1>
-            <p class="footer-text text-uppercase mt-2">Industrial Resource Management v1.0</p>
+    <nav class="navbar navbar-dark">
+        <div class="container justify-content-center">
+            <span class="navbar-brand brand-logo m-0">
+                <span>SIM</span> | SMART INVENTORY
+            </span>
         </div>
+    </nav>
 
-        <div class="card">
-            <div class="card-body p-4">
-                <h3 class="text-center mb-4" style="font-weight: 300;">Log In</h3>
-
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show small" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                <form method="POST" action="/login">
-                    <div class="mb-3">
-                        <label for="username" class="form-label small text-muted">Username</label>
-                        <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="Enter username" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label small text-muted">Password</label>
-                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">AUTHENTICATE</button>
-                </form>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="text-center mb-4">
+                <p class="text-muted small text-uppercase fw-bold mb-0" style="letter-spacing: 2px;">
+                    Enterprise Resource Planning
+                </p>
+                <div class="badge bg-dark border border-secondary text-info mt-2">SYSTEM v1.0</div>
             </div>
-            
-            <div class="card-footer border-0 text-center pb-4">
-                <small class="text-muted">New Operator? <a href="/register" class="text-info text-decoration-none">Register Here</a></small>
-            </div>
-        </div>
 
-        <div class="text-center mt-4">
-            <p class="footer-text">&copy; 2026 Designed & Engineered for Advanced Mobility Systems</p>
+            <div class="card">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="text-center mb-4 fw-light">System Authentication</h4>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show small py-2" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/login">
+                        <div class="mb-3">
+                            <label for="username" class="form-label text-muted">Operator ID</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label text-muted">Access Key</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">LOG IN TO CONSOLE</button>
+                    </form>
+                </div>
+                
+                <div class="card-footer border-0 text-center pb-4">
+                    <p class="small text-muted mb-0">
+                        Unauthorized access is prohibited. 
+                        <br>
+                        <a href="/register" class="text-info text-decoration-none fw-bold mt-2 d-inline-block">Request Access</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="footer-text text-uppercase">&copy; 2026 Designed & Engineered for Advanced Mobility Systems</p>
+            </div>
         </div>
     </div>
 
