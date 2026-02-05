@@ -14,21 +14,20 @@ db = SQLAlchemy(app)
 # --- NEW: BCRYPT & LOGIN MANAGER SETUP ---
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login' # Tells LoginManager which page to redirect to if a user isn't logged in
-login_manager.login_message_category = 'info' # Makes the "please log in" message look nice
+login_manager.login_view = 'login' 
+login_manager.login_message_category = 'info' 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 # --- NEW: USER MODEL ---
-# UserMixin is a special class from Flask-Login that adds required features
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
-    password = db.Column(db.String(60), nullable=False) # Hashed password (60 chars)
+    password = db.Column(db.String(60), nullable=False) 
 
-# --- PRODUCT MODEL (Unchanged) ---
+# --- PRODUCT MODEL ---
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -43,7 +42,6 @@ class Product(db.Model):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # If user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
@@ -51,16 +49,13 @@ def register():
         username = request.form['username']
         password = request.form['password']
         
-        # Check if username already exists
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists. Please choose a different one.', 'danger')
             return redirect(url_for('register'))
             
-        # Hash the password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        # Create new user and save to database
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -72,7 +67,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # If user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
         
@@ -80,12 +74,10 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        # Find user by username
         user = User.query.filter_by(username=username).first()
         
-        # Check if user exists and if password matches the hash
         if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user) # This line logs the user in
+            login_user(user) 
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -95,14 +87,14 @@ def login():
 
 @app.route('/logout')
 def logout():
-    logout_user() # This line logs the user out
+    logout_user() 
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
 # --- PROTECTED INVENTORY ROUTES ---
 
 @app.route('/')
-@login_required # NEW: This protects the route
+@login_required 
 def dashboard():
     search_term = request.args.get('search')
     if search_term:
@@ -112,7 +104,7 @@ def dashboard():
     return render_template('dashboard.html', products=products)
 
 @app.route('/add', methods=['GET', 'POST'])
-@login_required # NEW: This protects the route
+@login_required 
 def add_product():
     if request.method == 'POST':
         new_product = Product(
@@ -128,7 +120,7 @@ def add_product():
     return render_template('add_product.html')
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
-@login_required # NEW: This protects the route
+@login_required 
 def edit_product(id):
     product_to_edit = Product.query.get_or_404(id)
     if request.method == 'POST':
@@ -142,10 +134,18 @@ def edit_product(id):
     return render_template('edit_product.html', product=product_to_edit)
 
 @app.route('/delete/<int:id>', methods=['POST'])
-@login_required # NEW: This protects the route
+@login_required 
 def delete_product(id):
     product_to_delete = Product.query.get_or_404(id)
     db.session.delete(product_to_delete)
     db.session.commit()
     flash('Product deleted successfully.', 'danger')
     return redirect(url_for('dashboard'))
+
+# --- CRITICAL FIX FOR DEPLOYMENT ---
+# This ensures that database tables are created on the server before the app starts
+with app.app_context():
+    db.create_all()
+
+if __name__ == "__main__":
+    app.run(debug=True)
