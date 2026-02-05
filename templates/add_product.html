@@ -4,36 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/vapor/bootstrap.min.css" rel="stylesheet">
-    <title>Add New Product</title>
+    <title>Provision Asset - Smart Inventory Manager</title>
+    
+    <style>
+        body {
+            /* Consistent Industrial Background with Overlay */
+            background: linear-gradient(rgba(15, 15, 35, 0.9), rgba(15, 15, 35, 0.9)), 
+                        url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Standardized Console Navbar */
+        .navbar {
+            background-color: rgba(30, 30, 45, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+        }
+
+        .brand-logo {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .brand-logo span { color: #32fbe2; }
+
+        .form-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 0;
+        }
+
+        /* Glassmorphism Provisioning Card */
+        .glass-card {
+            background-color: rgba(30, 30, 45, 0.75) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.7rem;
+            color: #32fbe2;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .form-control:focus {
+            border-color: #32fbe2 !important;
+            box-shadow: 0 0 0 0.2rem rgba(50, 251, 226, 0.1) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #32fbe2, #444cf7) !important;
+            border: none !important;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(50, 251, 226, 0.3);
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Smart Inventory Manager</a>
+
+    <nav class="navbar navbar-dark">
+        <div class="container">
+            <a class="navbar-brand brand-logo m-0" href="/">
+                <span>SIM</span> | CONSOLE
+            </a>
+            <a href="/" class="btn btn-outline-info btn-sm">Return to Registry</a>
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <h1>Add a New Product</h1>
-        <form action="/add" method="POST">
-            <div class="mb-3">
-                <label for="name" class="form-label">Product Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+    <div class="form-wrapper">
+        <div class="glass-card">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-5">
+                    <h3 class="fw-light mb-1">Asset Provisioning</h3>
+                    <p class="text-muted small text-uppercase">Input technical specifications for new inventory entry</p>
+                </div>
+
+                <form action="/add" method="POST">
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Asset Nomenclature</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g., Industrial Controller v4" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Technical Specifications</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter detailed component data..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="quantity" class="form-label">Initial Stock Units</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="0" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="price" class="form-label">Unit Value ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">COMMIT TO REGISTRY</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <input type="text" class="form-control" id="description" name="description">
-            </div>
-            <div class="mb-3">
-                <label for="quantity" class="form-label">Quantity</label>
-                <input type="number" class="form-control" id="quantity" name="quantity" required>
-            </div>
-            <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" step="0.01" class="form-control" id="price" name="price" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Product</button>
-        </form>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
