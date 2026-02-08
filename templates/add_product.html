@@ -8,7 +8,6 @@
     
     <style>
         body {
-            /* Consistent Industrial Background with Overlay */
             background: linear-gradient(rgba(15, 15, 35, 0.9), rgba(15, 15, 35, 0.9)), 
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
@@ -20,7 +19,6 @@
             flex-direction: column;
         }
 
-        /* Standardized Console Navbar */
         .navbar {
             background-color: rgba(30, 30, 45, 0.9) !important;
             backdrop-filter: blur(10px);
@@ -45,7 +43,6 @@
             padding: 3rem 0;
         }
 
-        /* Glassmorphism Provisioning Card */
         .glass-card {
             background-color: rgba(30, 30, 45, 0.75) !important;
             backdrop-filter: blur(20px);
@@ -108,6 +105,18 @@
     <div class="form-wrapper">
         <div class="glass-card">
             <div class="card-body p-4 p-md-5">
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
                 <div class="text-center mb-5">
                     <h3 class="fw-light mb-1">Asset Provisioning</h3>
                     <p class="text-muted small text-uppercase">Input technical specifications for new inventory entry</p>
@@ -116,7 +125,9 @@
                 <form action="/add" method="POST">
                     <div class="mb-4">
                         <label for="name" class="form-label">Asset Nomenclature</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g., Industrial Controller v4" required>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="e.g., Industrial Controller v4" required 
+                               pattern=".*\S.*" title="Nomenclature cannot be empty or just spaces.">
                     </div>
                     
                     <div class="mb-4">
@@ -127,11 +138,11 @@
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label for="quantity" class="form-label">Initial Stock Units</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="0" required>
+                            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="0" required min="1">
                         </div>
                         <div class="col-md-6 mb-4">
-                            <label for="price" class="form-label">Unit Value ($)</label>
-                            <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="0.00" required>
+                            <label for="price" class="form-label">Unit Value (₹)</label>
+                            <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="0.00" required min="0">
                         </div>
                     </div>
 

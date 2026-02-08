@@ -8,7 +8,7 @@
     
     <style>
         body {
-            background: linear-gradient(rgba(15, 15, 35, 0.9), rgba(15, 15, 35, 0.9)), 
+            background: linear-gradient(rgba(15, 15, 35, 0.92), rgba(15, 15, 35, 0.92)), 
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -16,58 +16,92 @@
             min-height: 100vh;
             margin: 0;
             color: #fff;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
         }
 
         .navbar {
-            background-color: rgba(30, 30, 45, 0.9) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 0;
+            background-color: rgba(20, 20, 35, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(50, 251, 226, 0.2);
+            padding: 0.8rem 0;
         }
 
         .glass-card {
-            background-color: rgba(30, 30, 45, 0.75) !important;
+            background-color: rgba(30, 30, 45, 0.6) !important;
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .table { color: #fff !important; margin-bottom: 0; }
+        /* Improved Table UX */
+        .table { color: #e0e0e0 !important; margin-bottom: 0; }
         .table thead th { 
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
+            border-bottom: 2px solid rgba(50, 251, 226, 0.3); 
             text-transform: uppercase; 
-            font-size: 0.7rem; 
-            letter-spacing: 1px;
+            font-size: 0.75rem; 
+            font-weight: 800;
+            letter-spacing: 1.2px;
             color: #32fbe2;
+            padding: 1.2rem 1rem;
         }
-        .table tbody td { border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 1rem; }
-
-        .btn-action { transition: all 0.3s ease; }
-        .btn-action:hover { transform: translateY(-2px); }
         
-        .status-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; }
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        /* Subtle hover state for data tracking */
+        .table tbody tr:hover {
+            background-color: rgba(50, 251, 226, 0.05) !important;
+        }
+
+        .table tbody td { 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 1.2rem 1rem; 
+        }
+
+        .btn-action { 
+            transition: all 0.2s ease; 
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .btn-action:hover { transform: translateY(-1px); filter: brightness(1.2); }
+        
+        /* Dynamic Status Badges */
+        .status-badge { 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            padding: 0.5em 1em;
+            border-radius: 4px;
+        }
         
         .search-bar {
-            background-color: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             color: #fff !important;
+            transition: border-color 0.3s ease;
+        }
+        .search-bar:focus {
+            border-color: #32fbe2 !important;
+            box-shadow: 0 0 10px rgba(50, 251, 226, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark mb-4">
+    <nav class="navbar navbar-dark mb-5">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
-                <span style="color: #32fbe2;">SIM</span> | CONSOLE
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <span style="color: #32fbe2; font-size: 1.5rem; letter-spacing: 2px;">SIM</span> 
+                <span class="ms-2 opacity-50 fw-light">| CONSOLE v2.0</span>
             </a>
             <div class="d-flex align-items-center">
                 {% if current_user.is_authenticated %}
-                    <span class="navbar-text me-3 small text-uppercase">
-                        Operator: <strong class="text-info">{{ current_user.username }}</strong>
+                    <span class="navbar-text me-4 small text-uppercase tracking-wider">
+                        Auth_ID: <strong class="text-info">{{ current_user.username }}</strong>
                     </span>
-                    <a href="/logout" class="btn btn-outline-danger btn-sm">Term. Session</a>
+                    <a href="/logout" class="btn btn-outline-danger btn-sm px-3">TERMINATE SESSION</a>
                 {% endif %}
             </div>
         </div>
@@ -77,71 +111,91 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show small glass-card mb-4" role="alert">
-                        {{ message }}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show glass-card mb-4 border-start border-4 border-{{ category }}" role="alert">
+                        <strong class="text-uppercase small me-2">{{ category }}:</strong> {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <div class="row mb-4 align-items-end">
-            <div class="col-md-6">
-                <h2 class="fw-light mb-0">Asset Registry</h2>
-                <p class="text-muted small mb-0">Real-time inventory monitoring and management</p>
+        <div class="row mb-5 align-items-center">
+            <div class="col-md-7">
+                <h1 class="fw-light mb-1">Asset Registry</h1>
+                <p class="text-info small opacity-75 text-uppercase tracking-widest">Global Inventory Monitoring Interface</p>
             </div>
-            <div class="col-md-6 text-end">
-                <a href="/add" class="btn btn-primary btn-lg btn-action">+ Provision New Asset</a>
+            <div class="col-md-5 text-end">
+                <a href="/add" class="btn btn-primary btn-lg btn-action shadow-sm" style="background: linear-gradient(45deg, #32fbe2, #444cf7); border: none;">
+                    + Provision New Asset
+                </a>
             </div>
         </div>
 
-        <div class="card glass-card mb-4 p-3">
+        <div class="card glass-card mb-5 p-4">
             <form action="/" method="GET">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control search-bar" placeholder="Filter by asset nomenclature..." value="{{ request.args.get('search', '') }}">
-                    <button type="submit" class="btn btn-info px-4">Search Registry</button>
+                <div class="row g-2">
+                    <div class="col-md-10">
+                        <input type="text" name="search" class="form-control form-control-lg search-bar" 
+                               placeholder="Scan registry by nomenclature..." 
+                               value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-info btn-lg w-100 fw-bold">SEARCH</button>
+                    </div>
                 </div>
             </form>
         </div>
 
         <div class="card glass-card overflow-hidden">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table align-middle">
                     <thead>
                         <tr>
                             <th class="ps-4">UID</th>
                             <th>Nomenclature</th>
-                            <th>Technical Description</th>
-                            <th>Stock Level</th>
+                            <th>Specifications</th>
+                            <th>Status</th>
                             <th>Unit Value</th>
-                            <th class="text-center">Operations</th>
+                            <th class="text-end pe-4">System Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for product in products %}
                         <tr>
-                            <td class="ps-4"><span class="text-muted small">#{{ product.id }}</span></td>
-                            <td><span class="fw-bold text-info">{{ product.name }}</span></td>
-                            <td><span class="small text-muted">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</span></td>
+                            <td class="ps-4"><span class="opacity-50 font-monospace small">#{{ product.id }}</span></td>
+                            <td><span class="fw-bold" style="color: #32fbe2;">{{ product.name }}</span></td>
                             <td>
-                                <span class="badge status-badge {% if product.quantity < 10 %}bg-danger{% else %}bg-success{% endif %} text-uppercase">
-                                    {{ product.quantity }} Units
+                                <span class="small opacity-75">
+                                    {{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}
                                 </span>
                             </td>
-                            <td class="fw-bold">₹{{ "%.2f"|format(product.price) }}</td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <a href="/edit/{{ product.id }}" class="btn btn-sm btn-outline-warning me-2 btn-action">Modify</a>
-                                    <form action="/delete/{{ product.id }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger btn-action" onclick="return confirm('Confirm Decommissioning?')">Delete</button>
-                                    </form>
-                                </div>
+                            <td>
+                                {% if product.quantity <= 5 %}
+                                    <span class="badge status-badge bg-danger">CRITICAL: {{ product.quantity }}</span>
+                                {% elif product.quantity <= 20 %}
+                                    <span class="badge status-badge bg-warning text-dark">LOW STOCK: {{ product.quantity }}</span>
+                                {% else %}
+                                    <span class="badge status-badge bg-success">OPTIMAL: {{ product.quantity }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold text-white">₹{{ "%.2f"|format(product.price) }}</td>
+                            <td class="text-end pe-4">
+                                <a href="/edit/{{ product.id }}" class="btn btn-sm btn-outline-info me-2 btn-action">Modify</a>
+                                <form action="/delete/{{ product.id }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-action" 
+                                            onclick="return confirm('WARNING: Are you sure you want to decommission this asset?')">
+                                        Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% else %}
                         <tr>
                             <td colspan="6" class="text-center py-5">
-                                <p class="text-muted mb-0">No active asset records found in registry.</p>
+                                <div class="opacity-50 py-4">
+                                    <h4 class="fw-light">Registry Empty</h4>
+                                    <p class="small">No active assets detected in current sector.</p>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -152,15 +206,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', (event) => {
-            setTimeout(() => {
-                document.querySelectorAll('.alert-dismissible').forEach((alert) => {
-                    new bootstrap.Alert(alert).close();
-                });
-            }, 5000); 
-        });
-    </script>
 </body>
 </html>

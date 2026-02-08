@@ -8,8 +8,7 @@
     
     <style>
         body {
-            /* Consistent Industrial Background for Professional Credibility */
-            background: linear-gradient(rgba(15, 15, 35, 0.9), rgba(15, 15, 35, 0.9)), 
+            background: linear-gradient(rgba(15, 15, 35, 0.92), rgba(15, 15, 35, 0.92)), 
                         url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -18,12 +17,13 @@
             margin: 0;
             display: flex;
             flex-direction: column;
+            color: #fff;
         }
 
         .navbar {
-            background-color: rgba(30, 30, 45, 0.9) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(20, 20, 35, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(50, 251, 226, 0.2);
             padding: 1rem 0;
         }
 
@@ -44,12 +44,11 @@
             padding: 3rem 0;
         }
 
-        /* Glassmorphism Card to match Login and Add pages */
         .glass-card {
-            background-color: rgba(30, 30, 45, 0.75) !important;
+            background-color: rgba(30, 30, 45, 0.7) !important;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             border-radius: 12px;
             width: 100%;
             max-width: 600px;
@@ -65,16 +64,16 @@
         }
 
         .form-control {
-            background-color: rgba(255, 255, 255, 0.03) !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
             border: 1px solid rgba(255, 255, 255, 0.15) !important;
             color: #fff !important;
             border-radius: 8px;
-            padding: 0.8rem;
+            padding: 0.85rem;
         }
 
         .form-control:focus {
             border-color: #32fbe2 !important;
-            box-shadow: 0 0 0 0.2rem rgba(50, 251, 226, 0.1) !important;
+            box-shadow: 0 0 12px rgba(50, 251, 226, 0.15) !important;
         }
 
         .btn-primary {
@@ -82,14 +81,16 @@
             border: none !important;
             font-weight: 700;
             letter-spacing: 1.5px;
-            padding: 1rem;
+            padding: 1.1rem;
             border-radius: 8px;
             transition: all 0.3s ease;
+            text-transform: uppercase;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(50, 251, 226, 0.3);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 25px rgba(50, 251, 226, 0.3);
         }
     </style>
 </head>
@@ -100,37 +101,45 @@
             <a class="navbar-brand brand-logo m-0" href="/">
                 <span>SIM</span> | CONSOLE
             </a>
-            <a href="/" class="btn btn-outline-info btn-sm">Cancel Modification</a>
+            <a href="/" class="btn btn-outline-info btn-sm px-3">CANCEL MODIFICATION</a>
         </div>
     </nav>
 
     <div class="form-wrapper">
         <div class="glass-card">
             <div class="card-body p-4 p-md-5">
+                
                 <div class="text-center mb-5">
                     <h3 class="fw-light mb-1">Asset Record Update</h3>
-                    <p class="text-muted small text-uppercase">Modifying specifications for UID: <span class="text-info">#{{ product.id }}</span></p>
+                    <p class="text-muted small text-uppercase tracking-widest">
+                        Modifying specifications for UID: <span class="text-info font-monospace">#{{ product.id }}</span>
+                    </p>
                 </div>
 
                 <form method="POST">
                     <div class="mb-4">
                         <label for="name" class="form-label">Asset Nomenclature</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               value="{{ product.name }}" required pattern=".*\S.*" 
+                               title="Nomenclature cannot be empty or just spaces.">
                     </div>
                     
                     <div class="mb-4">
                         <label for="description" class="form-label">Technical Specifications</label>
-                        <textarea class="form-control" id="description" name="description" rows="3">{{ product.description }}</textarea>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Update detailed component data...">{{ product.description }}</textarea>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label for="quantity" class="form-label">Update Stock Level</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ product.quantity }}" required>
+                            <input type="number" class="form-control" id="quantity" name="quantity" 
+                                   value="{{ product.quantity }}" required min="0">
                         </div>
                         <div class="col-md-6 mb-4">
                             <label for="price" class="form-label">Current Unit Value (₹)</label>
-                            <input type="number" step="0.01" class="form-control" id="price" name="price" value="{{ product.price }}" required>
+                            <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                   value="{{ product.price }}" required min="0">
                         </div>
                     </div>
 

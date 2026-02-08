@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-# --- NEW IMPORTS ---
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
@@ -11,7 +10,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- NEW: BCRYPT & LOGIN MANAGER SETUP ---
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' 
@@ -21,25 +19,28 @@ login_manager.login_message_category = 'info'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- NEW: USER MODEL ---
+# --- UPDATED: USER MODEL ---
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(60), nullable=False) 
+    # Link to products: This allows user.products to return all their assets
+    products = db.relationship('Product', backref='owner', lazy=True)
 
-# --- PRODUCT MODEL ---
+# --- UPDATED: PRODUCT MODEL ---
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(200), nullable=True)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    # FOREIGN KEY: Every product now belongs to a specific User ID
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f'<Product {self.name}>'
 
-# --- NEW: AUTHENTICATION ROUTES ---
-
+# --- AUTHENTICATION ROUTES ---
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -91,16 +92,21 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
-# --- PROTECTED INVENTORY ROUTES ---
+# --- UPDATED: PROTECTED INVENTORY ROUTES ---
 
 @app.route('/')
 @login_required 
 def dashboard():
     search_term = request.args.get('search')
+    # LOGIC FIX: Filter by search term AND ensure only current_user's products are shown
     if search_term:
-        products = Product.query.filter(Product.name.ilike(f'%{search_term}%')).all()
+        products = Product.query.filter(
+            Product.name.ilike(f'%{search_term}%'),
+            Product.user_id == current_user.id
+        ).all()
     else:
-        products = Product.query.all()
+        # LOGIC FIX: Show only the logged-in user's assets
+        products = Product.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', products=products)
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -111,7 +117,9 @@ def add_product():
             name=request.form['name'],
             description=request.form['description'],
             quantity=int(request.form['quantity']),
-            price=float(request.form['price'])
+            price=float(request.form['price']),
+            # LOGIC FIX: Explicitly tag this product with the current user's ID
+            user_id=current_user.id
         )
         db.session.add(new_product)
         db.session.commit()
@@ -122,7 +130,8 @@ def add_product():
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required 
 def edit_product(id):
-    product_to_edit = Product.query.get_or_404(id)
+    # SECURITY FIX: Ensure the product actually belongs to the user before editing
+    product_to_edit = Product.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     if request.method == 'POST':
         product_to_edit.name = request.form['name']
         product_to_edit.description = request.form['description']
@@ -136,14 +145,14 @@ def edit_product(id):
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required 
 def delete_product(id):
-    product_to_delete = Product.query.get_or_404(id)
+    # SECURITY FIX: Ensure the product belongs to the user before deleting
+    product_to_delete = Product.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(product_to_delete)
     db.session.commit()
     flash('Product deleted successfully.', 'danger')
     return redirect(url_for('dashboard'))
 
 # --- CRITICAL FIX FOR DEPLOYMENT ---
-# This ensures that database tables are created on the server before the app starts
 with app.app_context():
     db.create_all()
 
